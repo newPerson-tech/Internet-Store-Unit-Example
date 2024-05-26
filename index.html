@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Internet Store</title>
+    <style>
+      body {
+        display: flex;
+        background-color: #ccc;
+      }
+      .category-list,
+      .product-list,
+      .product-info {
+        flex: 1;
+        padding: 20px;
+        border: 1px solid #ccc;
+        margin: 10px;
+        background-color: aliceblue;
+      }
+      .category-list {
+        max-width: 200px;
+      }
+      .product-list,
+      .product-info {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="category-list">
+      <h2>Categories</h2>
+      <ul id="categories">
+        <!-- Categories being added by js -->
+      </ul>
+    </div>
+    <div class="product-list">
+      <h2>Products</h2>
+      <ul id="products">
+        <!-- Products will be added by js -->
+      </ul>
+    </div>
+    <div class="product-info">
+      <h2>Product details</h2>
+      <div id="product-details">
+        <!-- Product details will be added by js -->
+      </div>
+      <button id="buy-button">Purchase</button>
+    </div>
+
+    <script>
+      //Products exapmples
+      const categories = {
+        Electronics: ["Phone", "Laptop", "TV"],
+        Clothes: ["Tshirt", "Jeans", "Coat"],
+        Groceries: ["Bread", "Milk", "Cheese"],
+      };
+
+      const productsInfo = {
+        Phone: "IPhone 13 128GB - Pink",
+        Laptop:
+          "HP 15-fc0008na, AMD Rysen 5 Processor, 8GB RAM, 256GB SSD, 15,6'' Full HD, Natural Silver",
+        TV: "LG 43LQ60006LA (2023) LED HDR Full HD 1080 Smart TV, 43'' with Freeview Play/Freesat HD, Black",
+        Tshirt: "Superdry Vintage Logo Nein T-Shirt Men",
+        Jeans: "Superdry Vintage Slim Jeans Dark-Blue Men",
+        Coat: "Superdry Hooded Sports Puffer Jacket Eclipse Navy Men",
+        Bread: "Keto Chefs Hand Crafted Low Carb Sandwitch Loaf 3x (600g)",
+        Milk: "Lakeland Dairies Long Life Whole Milk 12x 1ltr",
+        Cheese: "Waitrose Cheese Selection (870g)",
+      };
+
+      const categoryList = document.querySelector(".category-list");
+      const productList = document.querySelector(".product-list");
+      const productInfo = document.querySelector(".product-info");
+      const categoriesContainer = document.getElementById("categories");
+      const productsContainer = document.getElementById("products");
+      const productDetails = document.getElementById("product-details");
+      const buyButton = document.getElementById("buy-button");
+
+      function showCategories() {
+        categoryList.style.display = "block";
+        productList.style.display = "none";
+        productInfo.style.display = "none";
+      }
+
+      function showProducts(category) {
+        productList.style.display = "block";
+        productInfo.style.display = "none";
+        productsContainer.innerHTML = "";
+
+        categories[category].forEach((product) => {
+          const li = document.createElement("li");
+          li.textContent = product;
+          li.addEventListener("click", () => showProductInfo(product));
+          productsContainer.appendChild(li);
+        });
+      }
+
+      function showProductInfo(product) {
+        productInfo.style.display = "block";
+        productDetails.textContent = productsInfo[product];
+        buyButton.onclick = () => {
+          alert("Item has been purchased!");
+          showCategories();
+        };
+      }
+
+      Object.keys(categories).forEach((category) => {
+        const li = document.createElement("li");
+        li.textContent = category;
+        li.addEventListener("click", () => showProducts(category));
+        categoriesContainer.appendChild(li);
+      });
+
+      showCategories();
+    </script>
+  </body>
+</html>
