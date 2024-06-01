@@ -22,8 +22,16 @@
         max-width: 200px;
       }
       .product-list,
-      .product-info {
+      .product-info,
+      #order-form,
+      #order-summary {
         display: none;
+      }
+      .hidden {
+        display: none;
+      }
+      .error {
+        color: red;
       }
     </style>
   </head>
@@ -48,8 +56,57 @@
       <button id="buy-button">Purchase</button>
     </div>
 
+    <div id="order-form">
+      <h2>Order Form</h2>
+      <form id="purchase-form">
+        <label>
+          Full name:
+          <input type="text" id="customer-name" required /> </label
+        ><br /><br />
+        <label>
+          City:
+          <select id="city" required>
+            <option value="">Select city</option>
+            <option value="Київ">Kyiv</option>
+            <option value="Львів">Lviv</option>
+            <option value="Одеса">Odesa</option>
+            <option value="Харків">Kharkiv</option>
+          </select> </label
+        ><br /><br />
+        <label>
+          Nova Post store:
+          <input type="text" id="warehouse" required /> </label
+        ><br /><br />
+        <label>
+          Payment:
+          <select id="payment-method" required>
+            <option value="">Select payment method</option>
+            <option value="Postpaid">Postpaid</option>
+            <option value="Bank Card Payment">Bank Card Payment</option>
+          </select> </label
+        ><br /><br />
+        <label>
+          Items:
+          <input type="number" id="quantity" min="1" required /> </label
+        ><br /><br />
+        <label>
+          Comment to shipper:
+          <textarea id="comment"></textarea></label
+        ><br /><br />
+        <button type="submit">Order Confirmation</button>
+        <div id="form-error" class="error hidden">
+          Filling all fields is mandatory
+        </div>
+      </form>
+    </div>
+
+    <div id="order-summary">
+      <h2>Order Summary</h2>
+      <div id="order-details"></div>
+    </div>
+
     <script>
-      //Products exapmples
+      // Products examples
       const categories = {
         Electronics: ["Phone", "Laptop", "TV"],
         Clothes: ["Tshirt", "Jeans", "Coat"],
@@ -76,16 +133,27 @@
       const productsContainer = document.getElementById("products");
       const productDetails = document.getElementById("product-details");
       const buyButton = document.getElementById("buy-button");
+      const orderForm = document.getElementById("order-form");
+      const purchaseForm = document.getElementById("purchase-form");
+      const formError = document.getElementById("form-error");
+      const orderSummary = document.getElementById("order-summary");
+      const orderDetails = document.getElementById("order-details");
+
+      let currentProduct = "";
 
       function showCategories() {
         categoryList.style.display = "block";
         productList.style.display = "none";
         productInfo.style.display = "none";
+        orderForm.style.display = "none";
+        orderSummary.style.display = "none";
       }
 
       function showProducts(category) {
         productList.style.display = "block";
         productInfo.style.display = "none";
+        orderForm.style.display = "none";
+        orderSummary.style.display = "none";
         productsContainer.innerHTML = "";
 
         categories[category].forEach((product) => {
@@ -98,12 +166,52 @@
 
       function showProductInfo(product) {
         productInfo.style.display = "block";
+        orderForm.style.display = "none";
+        orderSummary.style.display = "none";
         productDetails.textContent = productsInfo[product];
-        buyButton.onclick = () => {
-          alert("Item has been purchased!");
-          showCategories();
-        };
+        currentProduct = product;
       }
+
+      buyButton.addEventListener("click", () => {
+        orderForm.style.display = "block";
+        formError.classList.add("hidden");
+      });
+
+      purchaseForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const customerName = document.getElementById("customer-name").value;
+        const city = document.getElementById("city").value;
+        const warehouse = document.getElementById("warehouse").value;
+        const paymentMethod = document.getElementById("payment-method").value;
+        const quantity = document.getElementById("quantity").value;
+        const comment = document.getElementById("comment").value;
+
+        if (
+          !customerName ||
+          !city ||
+          !warehouse ||
+          !paymentMethod ||
+          !quantity
+        ) {
+          formError.classList.remove("hidden");
+          return;
+        }
+
+        formError.classList.add("hidden");
+        orderForm.style.display = "none";
+        orderSummary.style.display = "block";
+
+        orderDetails.innerHTML = `
+                <p><strong>Товар:</strong> ${productsInfo[currentProduct]}</p>
+                <p><strong>ПІБ покупця:</strong> ${customerName}</p>
+                <p><strong>Місто:</strong> ${city}</p>
+                <p><strong>Склад Нової пошти:</strong> ${warehouse}</p>
+                <p><strong>Метод оплати:</strong> ${paymentMethod}</p>
+                <p><strong>Кількість:</strong> ${quantity}</p>
+                <p><strong>Коментар:</strong> ${comment}</p>
+            `;
+      });
 
       Object.keys(categories).forEach((category) => {
         const li = document.createElement("li");
